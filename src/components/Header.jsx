@@ -1,32 +1,33 @@
-import React, { useState } from 'react';
+
+import { Button } from '@chakra-ui/react'
+import { Input } from '@chakra-ui/react'
+import { Text } from '@chakra-ui/react'
+
 
 function Header() {
   return (
-    <div>
-      <h1>Lista React</h1>
+    <div >
+      <h1>Lista de Tareas</h1>
     </div>
   );
 }
 
 function Barra(props) {
-  const {data, descripcion, setDescripcion, tareaEditable, setTareaEditable , act } = props;
+  const { data, descripcion, setDescripcion, tareaEditable, setTareaEditable, act } = props;
 
-  const agregarDescripcion = (descripcion) => {
+  const agregarDescripcion = () => {
     if (descripcion.trim() !== '') {
       if (tareaEditable) {
-        const nuevasTareas = data.map((tarea) => {
-          if (tarea === tareaEditable) {
-            return { id: tarea.id, descripcion, completada: tarea.completada };
-          }
-          return tarea;
-        });
-       
+        const nuevasTareas = data.map((tarea) =>
+          tarea === tareaEditable
+            ? { id: tarea.id, descripcion, completada: tarea.completada }
+            : tarea
+        );
+
         act(nuevasTareas);
         setTareaEditable(null);
       } else {
-        // Genera un nuevo ID para la tarea
         const newId = data.length > 0 ? Math.max(...data.map((tarea) => tarea.id)) + 1 : 1;
-       
         act([...data, { id: newId, descripcion, completada: false }]);
       }
       setDescripcion('');
@@ -34,22 +35,27 @@ function Barra(props) {
   };
 
   return (
-    <div className="padre">
+    <div>
       <div className="add">
-        <input
+        <Input
+          marginTop={4}
           type="text"
           placeholder="Agrega tu tarea"
           className="input"
           value={descripcion}
-          onKeyDown={(event) => {if(event.key === 'Enter'){agregarDescripcion(descripcion)}}}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') {
+              agregarDescripcion(); // Llama a la función sin argumentos
+            }
+          }}
           onChange={(e) => setDescripcion(e.target.value)}
         />
-        <button className="agregar" style={{ color: 'blue' }} onClick={agregarDescripcion}>
+        <Button colorScheme='blue' variant='solid' marginTop={4}  marginLeft={3}  onClick={agregarDescripcion}>
           {tareaEditable ? 'Guardar' : '+'}
-        </button>
+        </Button>
       </div>
       <div className="pendiente">
-        <p>Tareas: {data.length}</p>
+        <Text as='abbr'>Tareas: {data.length}</Text>
       </div>
     </div>
   );

@@ -49,9 +49,7 @@
   grid-template-columns: 3fr 0.5fr;
 }
 .borrartodo{
-  margin-top: 10px;
-  background-color: brown;
-  border-color: brown;
+  
   margin-left: 400px;
 }
 
@@ -63,7 +61,4 @@
 }
 .editar{
   color: rgb(0, 255, 200);
-}
-.completar{
-  color: aqua;
 }
