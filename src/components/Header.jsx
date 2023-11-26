@@ -1,64 +1,101 @@
+import { Button, Input, Text, Flex } from '@chakra-ui/react';
+import { useEffect } from 'react';
 
-import { Button } from '@chakra-ui/react'
-import { Input } from '@chakra-ui/react'
-import { Text } from '@chakra-ui/react'
 
 
 function Header() {
   return (
-    <div >
-      <h1>Lista de Tareas</h1>
-    </div>
+    <Flex align="center"  >
+      <Text as="h1" fontSize="x3" fontWeight="bold" whiteSpace="nowrap">
+        Lista de Tareas
+      </Text>
+    </Flex>
   );
 }
 
-function Barra(props) {
-  const { data, descripcion, setDescripcion, tareaEditable, setTareaEditable, act } = props;
 
-  const agregarDescripcion = () => {
-    if (descripcion.trim() !== '') {
-      if (tareaEditable) {
-        const nuevasTareas = data.map((tarea) =>
-          tarea === tareaEditable
-            ? { id: tarea.id, descripcion, completada: tarea.completada }
-            : tarea
-        );
 
-        act(nuevasTareas);
-        setTareaEditable(null);
-      } else {
-        const newId = data.length > 0 ? Math.max(...data.map((tarea) => tarea.id)) + 1 : 1;
-        act([...data, { id: newId, descripcion, completada: false }]);
-      }
+
+const Barra = (props) => {
+  const {
+    data,
+    titulo,
+    setTitulo,
+    descripcion,
+    setDescripcion,
+    tareaEditable,
+    setTareaEditable,
+    act
+  } = props;
+
+  useEffect(() => {
+    // Actualiza el estado local del componente Barra cuando cambia la tareaEditable
+    if (tareaEditable) {
+      setTitulo(tareaEditable.titulo || '');
+      setDescripcion(tareaEditable.descripcion || '');
+    } else {
+      // Limpia los campos cuando no hay tareaEditable
+      setTitulo('');
       setDescripcion('');
     }
+  }, [tareaEditable]);
+
+  const agregarDescripcion = (event) => {
+    event.preventDefault();
+
+    // Validación: el título debe tener al menos 3 caracteres
+    if (titulo.trim().length < 3) {
+      alert('El título de la tarea debe tener al menos 3 caracteres.');
+      return;
+    }
+
+    // Si pasa la validación, agregar o editar la tarea
+    if (tareaEditable) {
+      const nuevasTareas = data.map((tarea) =>
+        tarea === tareaEditable ? { ...tarea, titulo, descripcion } : tarea
+      );
+
+      act(nuevasTareas);
+      setTareaEditable(null);
+    } else {
+      act([...data, { titulo, descripcion, completada: false }]);
+    }
+
+    // Limpiar los campos
+    setTitulo('');
+    setDescripcion('');
   };
 
   return (
-    <div>
-      <div className="add">
-        <Input
-          marginTop={4}
-          type="text"
-          placeholder="Agrega tu tarea"
-          className="input"
-          value={descripcion}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
-              agregarDescripcion(); // Llama a la función sin argumentos
-            }
-          }}
-          onChange={(e) => setDescripcion(e.target.value)}
-        />
-        <Button colorScheme='blue' variant='solid' marginTop={4}  marginLeft={3}  onClick={agregarDescripcion}>
-          {tareaEditable ? 'Guardar' : '+'}
-        </Button>
-      </div>
-      <div className="pendiente">
-        <Text as='abbr'>Tareas: {data.length}</Text>
-      </div>
-    </div>
+    <Flex direction="column" align="center" justify="center" py={4}>
+      <form onSubmit={agregarDescripcion}>
+        <Flex direction="column" align="center" justify="center" mb={4}>
+          <Input
+            type="text"
+            placeholder="Agrega el título de la tarea"
+            className="input"
+            value={titulo}
+            onChange={(e) => setTitulo(e.target.value)}
+            mb={3}
+          />
+          <Input
+            type="text"
+            placeholder="Agrega la descripción de la tarea"
+            className="input"
+            value={descripcion}
+            onChange={(e) => setDescripcion(e.target.value)}
+            mb={3}
+          />
+          <Button colorScheme="blue" variant="solid" type="submit">
+            Agregar
+          </Button>
+        </Flex>
+      </form>
+      <Text as="abbr" fontSize="md">
+        Tareas: {data.length}
+      </Text>
+    </Flex>
   );
-}
+};
 
 export { Header, Barra };
